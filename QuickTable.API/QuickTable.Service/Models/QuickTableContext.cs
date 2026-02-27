@@ -145,6 +145,8 @@ public partial class QuickTableContext : DbContext
 
             entity.ToTable("tables");
 
+            entity.HasIndex(e => e.TableNumber, "tables_table_number_key").IsUnique();
+
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Capacity).HasColumnName("capacity");
             entity.Property(e => e.IsActive)

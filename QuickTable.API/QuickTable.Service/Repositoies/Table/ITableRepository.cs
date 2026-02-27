@@ -13,6 +13,6 @@ namespace QuickTable.Service.Repositoies.Table
         Task<PagedResponse<TableReadDto>> GetAllAsync(string? search, TableFilterDto filter);
         Task<TableReadDto> GetByIdAsync(int id);
         Task<TableReadDto> CreateAsync(TableWriteDto createDto);
-        Task<TableReadDto> UpdateAsync(TableUpdateDto updateDto);
+        Task<TableReadDto> UpdateAsync(int id, TableUpdateDto updateDto);
     }
 }

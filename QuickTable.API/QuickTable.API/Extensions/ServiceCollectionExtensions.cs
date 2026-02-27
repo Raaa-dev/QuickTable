@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using QuickTable.Service.Repositoies;
 using QuickTable.Service.Repositoies.User;
 using QuickTable.Service.Repositoies.Table;
+using QuickTable.Service.Repositoies.MenuCategory;
 
 namespace QuickTable.API.Extensions
 {
@@ -13,6 +14,8 @@ namespace QuickTable.API.Extensions
             services.AddHttpContextAccessor();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ITableRepository, TableRepository>();
+            services.AddScoped<IMenuCategoryRepository, MenuCategoryRepository>();
+
             services.AddApiVersioning(options =>
             {
                 options.DefaultApiVersion = new ApiVersion(1, 0);
@@ -24,3 +27,4 @@ namespace QuickTable.API.Extensions
         }
     }
 }
+

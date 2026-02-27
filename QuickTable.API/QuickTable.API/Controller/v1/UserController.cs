@@ -6,15 +6,8 @@ using QuickTable.Service.Repositoies.User.Dto;
 
 namespace QuickTable.API.Controller.v1
 {
-    public class UserController : BaseController
+    public class UserController (IUserRepository _userRepository) : BaseController
     {
-        private readonly IUserRepository _userRepository;
-
-        public UserController(QuickTableContext context, IUserRepository userRepository)
-        {
-            _userRepository = userRepository;
-        }
-
         [HttpGet]
         public async Task<IActionResult> GetAllAsync(string? search, [FromQuery] UserFilterDto filter)
         {

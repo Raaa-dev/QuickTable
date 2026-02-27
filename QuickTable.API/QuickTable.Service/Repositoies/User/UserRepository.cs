@@ -11,17 +11,8 @@ using QuickTable.Service.Repositoies.User.Dto;
 
 namespace QuickTable.Service.Repositoies.User
 {
-    public class UserRepository : IUserRepository
+    public class UserRepository(QuickTableContext _context, IMapper _mapper) : IUserRepository
     {
-        private readonly QuickTableContext _context;
-        private readonly IMapper _mapper;
-
-        public UserRepository(QuickTableContext context, IMapper mapper)
-        {
-            _context = context;
-            _mapper = mapper;
-        }
-
         public async Task<PagedResponse<UserReadDto>> GetAllAsync(string? search, UserFilterDto filter)
         {
             try

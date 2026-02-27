@@ -1,3 +1,6 @@
 
 Scaffold-DbContext "Host=localhost;Database=quick_table;Username=postgres;Password=123" Npgsql.EntityFrameworkCore.PostgreSQL -OutputDir Models -Force 
 
+
+
+

@@ -5,15 +5,8 @@ using QuickTable.Service.Repositoies.Table.Dto;
 
 namespace QuickTable.API.Controller.v1
 {
-    public class TableController : BaseController
+    public class TableController(ITableRepository _tableRepository) : BaseController
     {
-        private readonly ITableRepository _tableRepository;
-
-        public TableController(ITableRepository tableRepository)
-        {
-            _tableRepository = tableRepository;
-        }
-
         [HttpGet]
         public async Task<IActionResult> GetAllAsync(string? search, [FromQuery] TableFilterDto filter)
         {
@@ -30,11 +23,18 @@ namespace QuickTable.API.Controller.v1
 
         [HttpPost]
 
-        public async Task<IActionResult> CreateAsync(TableWriteDto dtoCreate)
+        public async Task<IActionResult> CreateAsync([FromBody] TableWriteDto dtoCreate)
         {
             var result = await _tableRepository.CreateAsync(dtoCreate);
             return Ok(result);
         }
-        
+
+        [HttpPut("UpdateTable/{id}")]
+
+        public async Task<IActionResult> UpdateAsync(int id, [FromBody] TableUpdateDto dtoUpdate)
+        {
+            var result = await _tableRepository.UpdateAsync(id, dtoUpdate);
+            return Ok(result);
+        }
     }
 }
