@@ -1,0 +1,6 @@
+@QuickTable.API_HostAddress = https://localhost:5049
+
+GET {{QuickTable.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
