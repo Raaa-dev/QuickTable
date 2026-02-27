@@ -13,7 +13,7 @@ namespace QuickTable.Service.Repositoies.MenuCategory
     {
         Task<PagedResponse<MenuCategoryReadDto>> GetAllAsync(string? search, MenuCategoryFilterDto filter);
         Task<MenuCategoryReadDto> GetByIdAsync(int id);
-        Task<MenuCategoryReadDto> CreateAsync(MenuCategoryWriteDto createDto);
-        Task<MenuCategoryReadDto> UpdateAsync(int id,  MenuCategoryUpdateDto updateDto);
+        Task<MenuCategoryReadDto> CreateAsync(MenuCategoryWriteDto dtoCreate);
+        Task<MenuCategoryReadDto> UpdateAsync(int id,  MenuCategoryUpdateDto dtoUpdate);
     }
 }

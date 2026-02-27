@@ -71,7 +71,7 @@ namespace QuickTable.Service.Repositoies.MenuCategory
             return GetByIdAsync(entity.Id).Result;
         }
 
-        public async Task<MenuCategoryReadDto> UpdateAsync(int id, MenuCategoryWriteDto dtoUpdate)
+        public async Task<MenuCategoryReadDto> UpdateAsync(int id, MenuCategoryUpdateDto dtoUpdate)
         {
             try
             {
