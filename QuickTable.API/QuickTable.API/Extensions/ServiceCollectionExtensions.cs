@@ -4,6 +4,9 @@ using QuickTable.Service.Repositoies;
 using QuickTable.Service.Repositoies.User;
 using QuickTable.Service.Repositoies.Table;
 using QuickTable.Service.Repositoies.MenuCategory;
+using QuickTable.Service.Repositoies.MenuItem;
+using QuickTable.Service.Repositoies.Order;
+using QuickTable.Service.Repositoies.TableSession;
 
 namespace QuickTable.API.Extensions
 {
@@ -15,6 +18,9 @@ namespace QuickTable.API.Extensions
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ITableRepository, TableRepository>();
             services.AddScoped<IMenuCategoryRepository, MenuCategoryRepository>();
+            services.AddScoped<IMenuItemRepository, MenuItemRepository>();
+            services.AddScoped<IOrderRepository, OrderRepository>();
+            services.AddScoped<ITableSession, TableSession>();
 
             services.AddApiVersioning(options =>
             {

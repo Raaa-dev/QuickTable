@@ -6,14 +6,16 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using QuickTable.Service.Exceptions;
 using QuickTable.Service.Helpers;
 using QuickTable.Service.Models;
 using QuickTable.Service.Repositoies.Table.Dto;
+using QuickTable.Service.Repositoies.TableSession;
 
 namespace QuickTable.Service.Repositoies.Table
 {
-    public class TableRepository(QuickTableContext _context, IMapper _mapper) : ITableRepository
+    public class TableRepository(QuickTableContext _context, IMapper _mapper, ITableSession _tableSession) : ITableRepository
     {
         public async Task<PagedResponse<TableReadDto>> GetAllAsync(string? search, TableFilterDto filter)
         {
@@ -34,6 +36,7 @@ namespace QuickTable.Service.Repositoies.Table
 
                 var totalRecords = await query.CountAsync();
                 var results = await query
+                    .OrderByDescending(u => u.Id)
                     .Skip((filter.PageNo - 1) * filter.PageSize)
                     .Take(filter.PageSize)
                     .ToListAsync();
@@ -77,6 +80,7 @@ namespace QuickTable.Service.Repositoies.Table
             var entity = _mapper.Map<Models.Table>(dtoCreate);
             _context.Tables.Add(entity);
             await _context.SaveChangesAsync();
+            await _tableSession.GenerateQrAsync(entity.Id);
             return GetByIdAsync(entity.Id).Result;
         }
 

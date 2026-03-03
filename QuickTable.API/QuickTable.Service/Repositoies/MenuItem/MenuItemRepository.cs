@@ -9,22 +9,27 @@ using QuickTable.Service.Exceptions;
 using QuickTable.Service.Helpers;
 using QuickTable.Service.Models;
 using QuickTable.Service.Repositoies.MenuCategory.Dto;
-using QuickTable.Service.Repositoies.Table.Dto;
+using QuickTable.Service.Repositoies.MenuItem.Dto;
 
-namespace QuickTable.Service.Repositoies.MenuCategory
+namespace QuickTable.Service.Repositoies.MenuItem
 {
-    public class MenuCategoryRepository (QuickTableContext _context, IMapper _mapper) : IMenuCategoryRepository
+    public class MenuItemRepository (QuickTableContext _context, IMapper _mapper) : IMenuItemRepository
     {
-        public async Task<PagedResponse<MenuCategoryReadDto>> GetAllAsync(string? search, MenuCategoryFilterDto filter)
+        public async Task<PagedResponse<MenuItemReadDto>> GetAllAsync(string? search, MenuItemFilterDto filter)
         {
             try
             {
-                var query = _context.MenuCategories.AsQueryable();
+                var query = _context.MenuItems.AsQueryable();
 
                 if (!string.IsNullOrEmpty(search))
                 {
                     var val = search.ToLower();
                     query = query.Where(u => (u.Name ?? "").ToLower().Contains(val));
+                }
+
+                if (filter.CategoryId != 0)
+                {
+                    query = query.Where(u => u.CategoryId == filter.CategoryId);
                 }
 
                 if (filter.IsActive != null)
@@ -39,9 +44,9 @@ namespace QuickTable.Service.Repositoies.MenuCategory
                     .Take(filter.PageSize)
                     .ToListAsync();
 
-                return new PagedResponse<MenuCategoryReadDto>
+                return new PagedResponse<MenuItemReadDto>
                 {
-                    Data = _mapper.Map<List<MenuCategoryReadDto>>(results),
+                    Data = _mapper.Map<List<MenuItemReadDto>>(results),
                     TotalRecords = totalRecords,
                     PageNo = filter.PageNo,
                     PageSize = filter.PageSize
@@ -53,26 +58,36 @@ namespace QuickTable.Service.Repositoies.MenuCategory
             }
         }
 
-        public async Task<MenuCategoryReadDto> GetByIdAsync(int id)
+        public async Task<MenuItemReadDto> GetByIdAsync(int id)
         {
-            var entiry = await _context.MenuCategories.FindAsync(id) ?? throw new CustomException($"Cannot find Menu Category with Id {id}!"); ;
-            return _mapper.Map<MenuCategoryReadDto>(entiry);
+            var entiry = await _context.MenuItems.FindAsync(id) ?? throw new CustomException($"Cannot find Menu item with Id {id}!"); ;
+            return _mapper.Map<MenuItemReadDto>(entiry);
         }
 
-        public async Task<MenuCategoryReadDto> CreateAsync(MenuCategoryWriteDto dtoCreate)
+        public async Task<MenuItemReadDto> CreateAsync(MenuItemWriteDto dtoCreate)
         {
 
             if (string.IsNullOrEmpty(dtoCreate.Name))
             {
                 throw new CustomException("Name is required!");
             }
-            var entity = _mapper.Map<Models.MenuCategory>(dtoCreate);
-            _context.MenuCategories.Add(entity);
+
+            if (dtoCreate.CategoryId <= 0)
+            {
+                throw new CustomException("Category is required!");
+            }
+
+            if (dtoCreate.Price <= 0)
+            {
+                throw new CustomException("Price is required!");
+            }
+            var entity = _mapper.Map<Models.MenuItem>(dtoCreate);
+            _context.MenuItems.Add(entity);
             await _context.SaveChangesAsync();
             return GetByIdAsync(entity.Id).Result;
         }
 
-        public async Task<MenuCategoryReadDto> UpdateAsync(int id, MenuCategoryUpdateDto dtoUpdate)
+        public async Task<MenuItemReadDto> UpdateAsync(int id, MenuItemUpdateDto dtoUpdate)
         {
             try
             {
@@ -80,9 +95,20 @@ namespace QuickTable.Service.Repositoies.MenuCategory
                 {
                     throw new CustomException("Name is required!");
                 }
-                var entity = await _context.MenuCategories.FindAsync(id) ?? throw new CustomException($"Cannot find Menu Category with Id {id}!");
+
+                if (dtoUpdate.CategoryId <= 0)
+                {
+                    throw new CustomException("Category is required!");
+                }
+
+                if (dtoUpdate.Price <= 0)
+                {
+                    throw new CustomException("Price is required!");
+                }
+
+                var entity = await _context.MenuItems.FindAsync(id) ?? throw new CustomException($"Cannot find Menu item with Id {id}!");
                 _mapper.Map(dtoUpdate, entity);
-                _context.MenuCategories.Update(entity);
+                _context.MenuItems.Update(entity);
                 await _context.SaveChangesAsync();
                 return GetByIdAsync(entity.Id).Result;
 
@@ -93,6 +119,5 @@ namespace QuickTable.Service.Repositoies.MenuCategory
             }
 
         }
-
     }
 }

@@ -8,13 +8,9 @@
 
   <ItemGroup>
     <Folder Include="Handlers\" />
-    <Folder Include="Repositoies\MenuItem\" />
     <Folder Include="Repositoies\NotificationLog\" />
     <Folder Include="Repositoies\OrderItem\" />
-    <Folder Include="Repositoies\Order\" />
-    <Folder Include="Repositoies\TableSession\" />
     <Folder Include="Repositoies\TableQrCode\" />
-    <Folder Include="Shared\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,6 +29,7 @@
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.8" />
+    <PackageReference Include="QRCoder" Version="1.7.0" />
     <PackageReference Include="System.Text.Json" Version="8.0.5" />
   </ItemGroup>
 
