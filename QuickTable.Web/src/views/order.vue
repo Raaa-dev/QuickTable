@@ -2,8 +2,11 @@
 
 </script>
 
+
 <template>
-    <router-view></router-view>
+    <div>
+test order
+    </div>
 </template>
 
 <style scoped>
