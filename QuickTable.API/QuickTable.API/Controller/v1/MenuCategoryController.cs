@@ -25,11 +25,11 @@ namespace QuickTable.API.Controller.v1
             var result = await _menuCategoryRepository.CreateAsync(dtoCreate);
             return Ok(result);
         }
-        [HttpPut("Update/{id}")]
-        public async Task<IActionResult> UpdateAsync(int id, [FromBody] MenuCategoryUpdateDto dtoUpdate)
-        {
-            var result = await _menuCategoryRepository.UpdateAsync(id, dtoUpdate);
-            return Ok(result);
-        }
+        //[HttpPut("Update/{id}")]
+        //public async Task<IActionResult> UpdateAsync(int id, [FromBody] MenuCategoryUpdateDto dtoUpdate)
+        //{
+        //    var result = await _menuCategoryRepository.UpdateAsync(id, dtoUpdate);
+        //    return Ok(result);
+        //}
     }
 }
