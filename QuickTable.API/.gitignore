@@ -6,10 +6,38 @@ obj/
 .vs/
 *.user
 *.suo
+*.userprefs
 
-# Secrets/env
+# ======================
+# Secrets - IMPORTANT!
+# ======================
 .env
 .env.*
 
+appsettings.Development.json
+appsettings.Production.json
+
+# ======================
 # Logs
+# ======================
 *.log
+logs/
+
+# ======================
+# Docker
+# ======================
+# (keep Dockerfile and docker-compose.yml)
+# but ignore override files
+docker-compose.override.yml
+
+# ======================
+# OS Files
+# ======================
+.DS_Store        # Mac
+Thumbs.db        # Windows
+desktop.ini      # Windows
+
+# ======================
+# Rider / JetBrains
+# ======================
+.idea/

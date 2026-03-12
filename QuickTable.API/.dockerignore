@@ -1,0 +1,22 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Build outputs
+**/bin/
+**/obj/
+
+# Logs
+*.log
+
+# Environment files
+.env
+.env.*
+
+# Docker files
+Dockerfile
+docker-compose.yml
+
+# README
+README.md
