@@ -96,11 +96,8 @@
 import { ref, computed, onMounted } from "vue";
 import { useCartStore } from "../stores/cart";
 import { useTableStore } from "../stores/table";
-import axios from "axios";
+import api from "../api/axios";
 import FooterMenu from "../components/footer-menu.vue";
-
-// const API_BASE = 'https://localhost:7295/api/v1'
-const API_BASE = "/api/v1";
 
 // State
 const categories = ref([]);
@@ -154,14 +151,14 @@ const groupedMenuItems = computed(() => {
 // Methods
 const loadData = async () => {
   try {
-    const catRes = await axios.get(`${API_BASE}/MenuCategory`);
+    const catRes = await api.get('/api/v1/MenuCategory');
     categories.value = [
       { id: null, name: "All" },
       ...(catRes.data.data || []),
     ];
     currentCategory.value = null;
 
-    const itemsRes = await axios.get(`${API_BASE}/MenuItem`);
+    const itemsRes = await api.get('/api/v1/MenuItem');
     menuItems.value = (itemsRes.data.data || []).filter(
       (i) => i.isActive !== false,
     );
@@ -205,7 +202,7 @@ const placeOrder = async () => {
   };
 
   try {
-    const res = await axios.post(`${API_BASE}/Order/Create`, payload);
+    const res = await api.post(`/api/v1/Order/Create`, payload);
     alert(`Order placed! #${res.data?.data?.orderNumber || "—"}`);
     cart.value = [];
     showCart.value = false;

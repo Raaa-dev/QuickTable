@@ -2,13 +2,12 @@
 import { ref } from "vue";
 import { useCartStore } from "../stores/cart";
 import { useTableStore } from "../stores/table";
-import axios from "axios";
+import api from "../api/axios";
 import FooterMenu from "../components/footer-menu.vue";
 import { useRouter } from "vue-router";
 
 const cart = useCartStore();
 const router = useRouter();
-const API_BASE = "/api/v1";
 const tableStore = useTableStore();
 
 const showSuccess = ref(false);
@@ -35,7 +34,7 @@ const placeOrder = async () => {
   };
 
   try {
-    const res = await axios.post(`${API_BASE}/Order/Create`, payload);
+    const res = await api.post(`/api/v1/Order/Create`, payload);
     const order = res.data?.data;
 
     const history = JSON.parse(localStorage.getItem("orderHistory") || "[]");

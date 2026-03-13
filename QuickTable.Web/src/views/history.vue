@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import axios from "axios";
+import api from "../api/axios";
 import FooterMenu from "../components/footer-menu.vue";
 
 const history = ref<any[]>([]);
 const loading = ref(false);
-const API_BASE = "/api/v1";
 
 const loadHistory = async () => {
   loading.value = true;
@@ -18,7 +17,7 @@ const loadHistory = async () => {
     // 2. Check if current session is still active
     const sessionId = localStorage.getItem("sessionId");
     if (sessionId) {
-      const sessionRes = await axios.get(`${API_BASE}/Table/session/${sessionId}`);
+      const sessionRes = await api.get('/api/v1/Table/session/${sessionId}');
       const sessionStatus = sessionRes.data?.status;
 
       // ✅ Session closed by staff → clear history
@@ -35,7 +34,7 @@ const loadHistory = async () => {
     }
 
     // 3. Session still active → fetch latest orders
-    const res = await axios.get(`${API_BASE}/Order/GetAll`);
+    const res = await api.get('/api/v1/Order/GetAll');
     const apiOrders = res.data?.data || [];
 
     history.value = apiOrders.map((order: any) => ({

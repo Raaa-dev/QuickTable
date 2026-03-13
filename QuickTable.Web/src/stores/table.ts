@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import axios from "axios";
+import api from "../api/axios";
 
 export const useTableStore = defineStore("table", () => {
   const token = ref<string>(localStorage.getItem("tableToken") || "");
@@ -14,7 +14,7 @@ export const useTableStore = defineStore("table", () => {
     localStorage.setItem("tableToken", qrToken);
 
     try {
-      const res = await axios.get(`/api/v1/Table/Resolve?token=${qrToken}`);
+      const res = await api.get(`/api/v1/Table/Resolve?token=${qrToken}`);
       console.log("Table resolve response:", res.data);
 
       // Check if new session is different from old session
@@ -45,7 +45,7 @@ export const useTableStore = defineStore("table", () => {
     if (!storedSessionId) return;  // no session = nothing to check
 
     try {
-      const res = await axios.get(`/api/v1/Table/session/${storedSessionId}`);
+      const res = await api.get(`/api/v1/Table/session/${storedSessionId}`);
       if (res.data?.status === "Closed") {
         console.log("Session closed by staff, clearing data...");
         clear();
