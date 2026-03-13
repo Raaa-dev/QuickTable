@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { ref } from "vue";
 import { useCartStore } from "../stores/cart";
+import { useTableStore } from "../stores/table";
 import axios from "axios";
 import FooterMenu from "../components/footer-menu.vue";
 import { useRouter } from "vue-router";
@@ -7,15 +9,28 @@ import { useRouter } from "vue-router";
 const cart = useCartStore();
 const router = useRouter();
 const API_BASE = "/api/v1";
+const tableStore = useTableStore();
+
+const showSuccess = ref(false);
+const showError = ref(false);
+const errorMessage = ref("");
+const isLoading = ref(false);
 
 const placeOrder = async () => {
   if (cart.items.length === 0) return;
 
+  if (!tableStore.token) {
+    errorMessage.value = "No table token found. Please scan the QR code again.";
+    showError.value = true;
+    setTimeout(() => showError.value = false, 3000);
+    return;
+  }
+  isLoading.value = true;
   const payload = {
+    qrToken: tableStore.token,
     items: cart.items.map(ci => ({
       menuItemId: ci.menuItem.id,
       quantity: ci.quantity,
-      price: ci.price,
     })),
   };
 
@@ -23,7 +38,6 @@ const placeOrder = async () => {
     const res = await axios.post(`${API_BASE}/Order/Create`, payload);
     const order = res.data?.data;
 
-    // Save to localStorage as cache
     const history = JSON.parse(localStorage.getItem("orderHistory") || "[]");
     history.unshift({
       id: order?.id,
@@ -32,19 +46,59 @@ const placeOrder = async () => {
       total: cart.totalPrice,
       date: new Date().toISOString(),
       status: "Placed",
+      tableNumber: tableStore.tableNumber,
     });
     localStorage.setItem("orderHistory", JSON.stringify(history));
 
     cart.clearCart();
-    router.push("/history");
+
+    // Show success toast then redirect
+    showSuccess.value = true;
+    setTimeout(() => {
+      showSuccess.value = false;
+      router.push("/history");
+    }, 2000);
+
   } catch (err: any) {
-    alert("Failed: " + (err.response?.data?.message || err.message));
+    errorMessage.value = err.response?.data?.message || err.message;
+    showError.value = true;
+    setTimeout(() => showError.value = false, 3000);
+  }finally{
+    isLoading.value = false;
   }
 };
 </script>
 
 <template>
   <div class="font-sans max-w-[480px] mx-auto bg-gray-50 min-h-screen pb-36">
+    
+        <!-- Loading -->
+    <div v-if="isLoading"
+    class="fixed inset-0 flex items-center justify-center bg-black/40"
+    style="z-index: 9999;">
+    <span class="loading loading-spinner text-warning" style="width:3rem;height:3rem;"></span>
+    </div>
+    <!-- ✅ Success Toast -->
+    <div v-if="showSuccess"
+      class="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-[440px] transition-all">
+      <div role="alert" class="alert alert-success bg-green-50 border border-green-200 rounded-xl px-4 py-3 flex items-center gap-3 shadow-lg">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-green-600" fill="none" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span class="text-green-700 font-medium">Your order has been placed!</span>
+      </div>
+    </div>
+
+    <!-- ❌ Error Toast -->
+    <div v-if="showError"
+      class="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-[440px] transition-all">
+      <div role="alert" class="bg-red-50 border border-red-200 rounded-xl px-4 py-3 flex items-center gap-3 shadow-lg">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-red-600" fill="none" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span class="text-red-700 font-medium">{{ errorMessage }}</span>
+      </div>
+    </div>
 
     <header class="bg-yellow-400 px-4 py-3 font-bold text-xl text-gray-700">
       🛒 Your Order

@@ -14,12 +14,30 @@ const loadHistory = async () => {
   const cached = JSON.parse(localStorage.getItem("orderHistory") || "[]");
   history.value = cached;
 
-  // 2. Then fetch from API to get latest (status updates etc)
   try {
+    // 2. Check if current session is still active
+    const sessionId = localStorage.getItem("sessionId");
+    if (sessionId) {
+      const sessionRes = await axios.get(`${API_BASE}/Table/session/${sessionId}`);
+      const sessionStatus = sessionRes.data?.status;
+
+      // ✅ Session closed by staff → clear history
+      if (sessionStatus === "Closed") {
+        localStorage.removeItem("orderHistory");
+        localStorage.removeItem("cart");
+        localStorage.removeItem("sessionId");
+        localStorage.removeItem("tableToken");
+        localStorage.removeItem("tableNumber");
+        history.value = [];
+        loading.value = false;
+        return;
+      }
+    }
+
+    // 3. Session still active → fetch latest orders
     const res = await axios.get(`${API_BASE}/Order/GetAll`);
     const apiOrders = res.data?.data || [];
 
-    // Merge API data with localStorage (API is source of truth)
     history.value = apiOrders.map((order: any) => ({
       id: order.id,
       orderNumber: order.orderNumber,
@@ -29,11 +47,10 @@ const loadHistory = async () => {
       items: order.orderItems || [],
     }));
 
-    // Update cache
     localStorage.setItem("orderHistory", JSON.stringify(history.value));
+
   } catch (err) {
     console.warn("API failed, using cached history");
-    // Keep localStorage data if API fails
   } finally {
     loading.value = false;
   }

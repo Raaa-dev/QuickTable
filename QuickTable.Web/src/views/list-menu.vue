@@ -6,6 +6,9 @@
     <!-- Header -->
     <header class="bg-yellow-400 px-4 py-3 flex justify-between items-center font-bold">
       <div class="text-xl text-gray-700">K3NEY</div>
+        <div v-if="tableStore.tableNumber" class="text-sm text-gray-700 font-medium">
+    🪑 {{ tableStore.tableNumber }}
+  </div>
       <div
         class="relative bg-white w-10 h-10 rounded-full flex items-center justify-center">
         <img src="/src/assets/store.png" alt="Cart" class="w-8 h-7" />
@@ -92,6 +95,7 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { useCartStore } from "../stores/cart";
+import { useTableStore } from "../stores/table";
 import axios from "axios";
 import FooterMenu from "../components/footer-menu.vue";
 
@@ -104,6 +108,7 @@ const menuItems = ref([]);
 const currentCategory = ref(null);
 const showCart = ref(false);
 const cart = useCartStore();
+const tableStore = useTableStore();
 
 const currentTab = ref("menu");
 const onTabChange = (tab) => {
@@ -212,7 +217,18 @@ const placeOrder = async () => {
   }
 };
 
-onMounted(() => {
+onMounted(async () => {
+  // Check if session was closed by staff
+   await tableStore.checkAndClearIfClosed();
+  // Read token from URL ?token=xxx
+  const urlParams = new URLSearchParams(window.location.search);
+  const token = urlParams.get("token");
+  if (token) {
+    await tableStore.setToken(token);
+    // Clean token from URL without reload
+    window.history.replaceState({}, "", window.location.pathname);
+  }
+
   loadData();
 });
 </script>
