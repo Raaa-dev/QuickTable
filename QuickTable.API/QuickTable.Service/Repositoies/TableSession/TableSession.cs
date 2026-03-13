@@ -11,10 +11,11 @@ using QuickTable.Service.Repositoies.TableSession.Dto;
 using QRCoder;
 using System.Drawing;
 using System.IO;
+using Microsoft.Extensions.Configuration;
 
 namespace QuickTable.Service.Repositoies.TableSession
 {
-    public class TableSession (QuickTableContext _context, IMapper _mapper) : ITableSession
+    public class TableSession (QuickTableContext _context, IMapper _mapper, IConfiguration _config) : ITableSession
     {
         private const int SESSION_EXPIRY = 1;
         public async Task<TableResolveDto> ResolveTableByQrAsync(string token)
@@ -108,7 +109,8 @@ namespace QuickTable.Service.Repositoies.TableSession
 
         public byte[] GenerateQrCode(string token)
         {
-            string url = $"https://localhost:7295/api/v1/Table/resolve?token={token}";
+            string frontendUrl = _config["AppSettings:FrontendUrl"];
+            string url = $"{frontendUrl }/?token={token}";
 
             using (var qrGenerator = new QRCodeGenerator())
             using (var qrData = qrGenerator.CreateQrCode(url, QRCodeGenerator.ECCLevel.Q))
