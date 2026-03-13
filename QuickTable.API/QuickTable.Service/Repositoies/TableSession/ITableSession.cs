@@ -13,5 +13,12 @@ namespace QuickTable.Service.Repositoies.TableSession
         Task GenerateQrAsync(int tableId);
         Task <Models.TableSession> GetOrCreateSessionAsync(int tableId);
         byte[] GenerateQrCode(string token);
+
+        Task CloseSessionAsync(int id);
+
+        Task<Models.TableSession?> GetSessionByIdAsync(int sessionId);
+        Task CloseSessionByTableAsync(int tableId);
+
+        //Task AutoCloseExpiredSessionsAsync(int tableId);
     }
 }

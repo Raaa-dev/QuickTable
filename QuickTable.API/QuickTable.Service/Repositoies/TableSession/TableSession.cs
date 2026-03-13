@@ -92,6 +92,27 @@ namespace QuickTable.Service.Repositoies.TableSession
 
             await _context.SaveChangesAsync();
         }
+
+        public async Task<Models.TableSession?> GetSessionByIdAsync(int sessionId)
+        {
+            return await _context.TableSessions
+                .FirstOrDefaultAsync(s => s.Id == sessionId);
+        }
+
+        public async Task CloseSessionByTableAsync(int tableId)
+        {
+            var sessions = await _context.TableSessions
+                .Where(s => s.TableId == tableId && s.Status == "Active")
+                .ToListAsync();
+
+            foreach (var s in sessions)
+            {
+                s.Status = "Closed";
+                s.EndAt = DateTime.Now;
+            }
+
+            await _context.SaveChangesAsync();
+        }
         public async Task AutoCloseExpiredSessionsAsync()
         {
             var expiredSessions = await _context.TableSessions
