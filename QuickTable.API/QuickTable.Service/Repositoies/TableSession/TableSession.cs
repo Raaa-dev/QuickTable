@@ -12,6 +12,7 @@ using QRCoder;
 using System.Drawing;
 using System.IO;
 using Microsoft.Extensions.Configuration;
+using System.Xml.Linq;
 
 namespace QuickTable.Service.Repositoies.TableSession
 {
@@ -131,17 +132,14 @@ namespace QuickTable.Service.Repositoies.TableSession
         public byte[] GenerateQrCode(string token)
         {
             string frontendUrl = _config["AppSettings:FrontendUrl"];
-            string url = $"{frontendUrl }/?token={token}";
+            string url = $"{frontendUrl}/?token={token}";
 
-            using (var qrGenerator = new QRCodeGenerator())
-            using (var qrData = qrGenerator.CreateQrCode(url, QRCodeGenerator.ECCLevel.Q))
-            using (var qrCode = new QRCode(qrData))
-            using (var bitmap = qrCode.GetGraphic(20))
-            using (var stream = new MemoryStream())
-            {
-                bitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
-                return stream.ToArray();
-            }
+            using var qrGenerator = new QRCodeGenerator();
+            using var qrData = qrGenerator.CreateQrCode(url, QRCodeGenerator.ECCLevel.Q);
+
+            // ✅ PngByteQRCode works on Linux — no System.Drawing needed
+            var qrCode = new PngByteQRCode(qrData);
+            return qrCode.GetGraphic(20);
         }
     }
 }
