@@ -7,6 +7,7 @@ using QuickTable.Service.Repositoies.MenuCategory;
 using QuickTable.Service.Repositoies.MenuItem;
 using QuickTable.Service.Repositoies.Order;
 using QuickTable.Service.Repositoies.TableSession;
+using QuickTable.Service.Shared;
 
 namespace QuickTable.API.Extensions
 {
@@ -21,6 +22,7 @@ namespace QuickTable.API.Extensions
             services.AddScoped<IMenuItemRepository, MenuItemRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<ITableSession, TableSession>();
+            services.AddHttpClient<ITelegramNotificationService, TelegramNotificationService>();
 
             services.AddApiVersioning(options =>
             {

@@ -11,10 +11,11 @@ using QuickTable.Service.Helpers;
 using QuickTable.Service.Models;
 using QuickTable.Service.Repositoies.MenuItem.Dto;
 using QuickTable.Service.Repositoies.Order.Dto;
+using QuickTable.Service.Shared;
 
 namespace QuickTable.Service.Repositoies.Order
 {
-    public class OrderRepository(QuickTableContext _context, IMapper _mapper) : IOrderRepository
+    public class OrderRepository(QuickTableContext _context, IMapper _mapper, ITelegramNotificationService _telegram) : IOrderRepository
     {
         public async Task<PagedResponse<OrderReadDto>> GetAllAsync(string? search, OrderFilterDto filter)
         {
@@ -118,7 +119,12 @@ namespace QuickTable.Service.Repositoies.Order
 
             await _context.SaveChangesAsync();
 
-            return _mapper.Map<OrderReadDto>(order);
+            var result =  _mapper.Map<OrderReadDto>(order);
+
+            // 7. Send Telegram notification (fire-and-forget, won't block response)
+            _ = Task.Run(() => _telegram.SendOrderNotificationAsync(result, session.Table?.TableNumber?.ToString()));
+
+            return result;
         }
 
         //public async Task<OrderReadDto> CreateAsync(int tableId, List<OrderItemWriteDto> itemsDto)
