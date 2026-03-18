@@ -41,48 +41,68 @@
         </div>
         <!-- Items grid -->
         <div class="grid grid-cols-2 gap-3 px-4 pb-2">
-          <div
-            v-for="item in group.items"
-            :key="item.id"
-            class="bg-white rounded-xl overflow-hidden shadow-sm hover:-translate-y-1 transition-transform"
-          >
-            <div class="h-36 bg-yellow-100 flex items-center justify-center text-5xl">🍔</div>
-            <div class="p-2.5">
-              <div class="font-semibold text-gray-800 mb-2 text-sm">{{ item.name }}</div>
-              <div class="flex justify-between items-center ">
-                <span class="text-orange-700 font-bold">${{ item.price.toFixed(2) }}</span>
-                <button
-                  class="bg-yellow-400 hover:bg-yellow-500 active:scale-95 w-9 h-9 rounded-full flex items-center justify-center transition-all"
-                  @click="cart.addItem(item)"
-                >
-                  <img src="/src/assets/shopping-bag.png" alt="Add" class="w-4 h-4" />
-                </button>
-              </div>
-            </div>
+
+<!-- ALL TAB grid item -->
+      <div
+        v-for="item in group.items"
+        :key="item.id"
+        class="bg-white rounded-2xl overflow-hidden shadow-sm hover:-translate-y-1 transition-transform"
+      >
+        <div class="relative overflow-hidden" style="height: 170px;">
+          <img
+            v-if="item.imageUrl"
+            :src="`${API_BASE}${item.imageUrl}`"
+            :alt="item.name"
+            class="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+          />
+          <div v-else class="w-full h-full bg-yellow-100 flex items-center justify-center text-5xl">🍔</div>
+
+          <!-- gradient + name + price -->
+          <div class="absolute bottom-0 left-0 right-0 px-3 pb-3 pt-8 bg-gradient-to-t from-black/65 to-transparent">
+            <p class="text-white font-semibold text-sm m-0 leading-tight">{{ item.name }}</p>
+            <p class="text-yellow-400 font-bold text-xs m-0">${{ item.price.toFixed(2) }}</p>
           </div>
+
+          <!-- floating add button -->
+          <button
+            class="absolute bottom-2 right-2 w-9 h-9 rounded-full bg-yellow-400 hover:bg-yellow-500 active:scale-95 flex items-center justify-center transition-all shadow-md border-none cursor-pointer"
+            @click="cart.addItem(item)"
+          >
+            <img src="/src/assets/shopping-bag.png" alt="Add" class="w-4 h-4" />
+          </button>
+        </div>
+      </div>
         </div>
       </div>
     </template>
 
-    <!-- SPECIFIC CATEGORY TAB: normal grid -->
+<!-- SPECIFIC CATEGORY TAB -->
     <div v-else class="grid grid-cols-2 gap-3 p-4">
       <div
         v-for="item in filteredMenuItems"
         :key="item.id"
-        class="bg-white rounded-xl overflow-hidden shadow-sm hover:-translate-y-1 transition-transform"
+        class="bg-white rounded-2xl overflow-hidden shadow-sm hover:-translate-y-1 transition-transform"
       >
-        <div class="h-36 bg-yellow-100 flex items-center justify-center text-5xl">🍔</div>
-        <div class="p-2.5">
-          <div class="font-semibold text-gray-800 mb-2 text-sm">{{ item.name }}</div>
-          <div class="flex justify-between items-center">
-            <span class="text-orange-700 font-bold">${{ item.price.toFixed(2) }}</span>
-            <button
-              class="bg-yellow-400 hover:bg-yellow-500 active:scale-95 w-9 h-9 rounded-full flex items-center justify-center transition-all"
-              @click="cart.addItem(item)"
-            >
-              <img src="/src/assets/shopping-bag.png" alt="Add" class="w-4 h-4 cursor-pointer" />
-            </button>
+        <div class="relative overflow-hidden" style="height: 170px;">
+          <img
+            v-if="item.imageUrl"
+            :src="`${API_BASE}${item.imageUrl}`"
+            :alt="item.name"
+            class="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+          />
+          <div v-else class="w-full h-full bg-yellow-100 flex items-center justify-center text-5xl">🍔</div>
+
+          <div class="absolute bottom-0 left-0 right-0 px-3 pb-3 pt-8 bg-gradient-to-t from-black/65 to-transparent">
+            <p class="text-white font-semibold text-sm m-0 leading-tight">{{ item.name }}</p>
+            <p class="text-yellow-400 font-bold text-xs m-0">${{ item.price.toFixed(2) }}</p>
           </div>
+
+          <button
+            class="absolute bottom-2 right-2 w-9 h-9 rounded-full bg-yellow-400 hover:bg-yellow-500 active:scale-95 flex items-center justify-center transition-all shadow-md border-none cursor-pointer"
+            @click="cart.addItem(item)"
+          >
+            <img src="/src/assets/shopping-bag.png" alt="Add" class="w-4 h-4" />
+          </button>
         </div>
       </div>
     </div>
@@ -92,7 +112,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
 import { useCartStore } from "../stores/cart";
 import { useTableStore } from "../stores/table";
@@ -106,6 +126,7 @@ const currentCategory = ref(null);
 const showCart = ref(false);
 const cart = useCartStore();
 const tableStore = useTableStore();
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 const currentTab = ref("menu");
 const onTabChange = (tab) => {
