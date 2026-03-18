@@ -1,0 +1,42 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07080f;--surface:#0e0f1a;--surface2:#161728;--surface3:#1e2035;
+  --border:#252640;--border2:#2e3055;
+  --accent:#ff6b35;--accent-dim:#ff6b3520;
+  --accent2:#4ecdc4;--accent2-dim:#4ecdc420;
+  --purple:#a78bfa;--purple-dim:#a78bfa20;
+  --green:#22c55e;--green-dim:#22c55e20;
+  --red:#ef4444;--red-dim:#ef444420;
+  --yellow:#f59e0b;--yellow-dim:#f59e0b20;
+  --text:#e8eaf6;--text2:#9497b8;--text3:#5a5e80;
+  --font:'Outfit',sans-serif;--mono:'JetBrains Mono',monospace;
+  --radius:10px;--radius-lg:16px;--shadow:0 4px 24px rgba(0,0,0,0.4);
+}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh}
+
+/* Buttons */
+.btn{padding:9px 18px;border-radius:var(--radius);font-family:var(--font);font-weight:700;font-size:13px;cursor:pointer;border:none;transition:all 0.15s;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.btn:disabled{opacity:0.6;cursor:not-allowed}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover:not(:disabled){background:#ff8255;box-shadow:0 0 20px var(--accent-dim)}
+.btn-ghost{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
+.btn-ghost:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+.btn-danger{background:var(--red-dim);color:var(--red);border:1px solid #ef444430}
+.btn-danger:hover:not(:disabled){background:#ef444430}
+.btn-sm{padding:6px 12px;font-size:12px}
+
+/* Chips */
+.chip{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;font-family:var(--mono)}
+.c-green{background:var(--green-dim);color:var(--green);border:1px solid #22c55e25}
+.c-red{background:var(--red-dim);color:var(--red);border:1px solid #ef444425}
+.c-teal{background:var(--accent2-dim);color:var(--accent2);border:1px solid #4ecdc425}
+.c-purple{background:var(--purple-dim);color:var(--purple);border:1px solid #a78bfa25}
+.c-yellow{background:var(--yellow-dim);color:var(--yellow);border:1px solid #f59e0b25}
+.id-tag{font-family:var(--mono);font-size:12px;color:var(--text3);background:var(--surface2);padding:2px 8px;border-radius:6px;border:1px solid var(--border)}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--surface)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
