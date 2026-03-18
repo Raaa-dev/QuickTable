@@ -57,7 +57,6 @@ namespace QuickTable.Service.Shared
             if (!string.IsNullOrEmpty(tableNumber))
                 sb.AppendLine($"🪑 Table: <b>{tableNumber}</b>");
 
-            sb.AppendLine($"🔖 Session ID: {order.TableSessionId}");
             sb.AppendLine($"📌 Status: {order.Status}");
             sb.AppendLine();
             sb.AppendLine("🛒 <b>Items:</b>");
