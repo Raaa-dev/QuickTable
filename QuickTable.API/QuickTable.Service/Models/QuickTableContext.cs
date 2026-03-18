@@ -63,6 +63,9 @@ public partial class QuickTableContext : DbContext
                 .HasColumnName("name");
             entity.Property(e => e.Price).HasColumnName("price");
 
+            entity.Property(e => e.ImageUrl)
+    .HasMaxLength(500)
+    .HasColumnName("image_url");
             entity.HasOne(d => d.Category).WithMany(p => p.MenuItems)
                 .HasForeignKey(d => d.CategoryId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
