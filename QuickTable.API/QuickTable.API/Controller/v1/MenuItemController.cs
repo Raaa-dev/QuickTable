@@ -31,5 +31,22 @@ namespace QuickTable.API.Controller.v1
             var result = await _menuItemRepository.UpdateAsync(id, dtoUpdate);
             return Ok(result);
         }
+
+        // PUT api/menu-items/5/image
+        [HttpPut("{id}/image")]
+        public async Task<IActionResult> UploadImage(int id, IFormFile file)
+        {
+            var result = await _menuItemRepository.UploadImageAsync(id, file);
+            return Ok(result);
+        }
+
+        // DELETE api/menu-items/5/image
+        [HttpDelete("{id}/image")]
+        public async Task<IActionResult> DeleteImage(int id)
+        {
+            await _menuItemRepository.DeleteImageAsync(id);
+            return Ok(new { message = "Image deleted successfully!" });
+        }
     }
 }
+

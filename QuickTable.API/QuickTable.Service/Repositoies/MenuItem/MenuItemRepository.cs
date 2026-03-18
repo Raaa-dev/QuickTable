@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using QuickTable.Service.Exceptions;
 using QuickTable.Service.Helpers;
@@ -119,5 +120,67 @@ namespace QuickTable.Service.Repositoies.MenuItem
             }
 
         }
+        // ─── UPLOAD IMAGE ────────────────────────────────────────────────────
+        public async Task<MenuItemReadDto> UploadImageAsync(int id, IFormFile file)
+        {
+            var entity = await _context.MenuItems.FindAsync(id)
+                ?? throw new CustomException($"Cannot find Menu item with Id {id}!");
+
+            if (file == null || file.Length == 0)
+                throw new CustomException("Image file is required!");
+
+            var allowedTypes = new[] { "image/jpeg", "image/png", "image/webp" };
+            if (!allowedTypes.Contains(file.ContentType.ToLower()))
+                throw new CustomException("Only JPEG, PNG, and WEBP images are allowed!");
+
+            // Delete old image if exists
+            DeleteImageFile(entity.ImageUrl);
+
+            // Save new image
+            entity.ImageUrl = await SaveImageFileAsync(file);
+
+            _context.MenuItems.Update(entity);
+            await _context.SaveChangesAsync();
+            return _mapper.Map<MenuItemReadDto>(entity);
+        }
+
+        // ─── DELETE IMAGE ────────────────────────────────────────────────────
+        public async Task DeleteImageAsync(int id)
+        {
+            var entity = await _context.MenuItems.FindAsync(id)
+                ?? throw new CustomException($"Cannot find Menu item with Id {id}!");
+
+            if (string.IsNullOrEmpty(entity.ImageUrl))
+                throw new CustomException("This menu item has no image!");
+
+            DeleteImageFile(entity.ImageUrl);
+            entity.ImageUrl = null;
+
+            _context.MenuItems.Update(entity);
+            await _context.SaveChangesAsync();
+        }
+
+        // ─── PRIVATE HELPERS ─────────────────────────────────────────────────
+        private async Task<string> SaveImageFileAsync(IFormFile file)
+        {
+            var uploadFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "menu-items");
+            Directory.CreateDirectory(uploadFolder);
+
+            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+            var filePath = Path.Combine(uploadFolder, fileName);
+
+            using var stream = new FileStream(filePath, FileMode.Create);
+            await file.CopyToAsync(stream);
+
+            return $"/uploads/menu-items/{fileName}";
+        }
+
+        private void DeleteImageFile(string? imageUrl)
+        {
+            if (string.IsNullOrEmpty(imageUrl)) return;
+            var fullPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", imageUrl.TrimStart('/'));
+            if (File.Exists(fullPath)) File.Delete(fullPath);
+        }
     }
 }
+

@@ -1,6 +1,4 @@
 
 Scaffold-DbContext "Host=localhost;Database=quick_table;Username=postgres;Password=123" Npgsql.EntityFrameworkCore.PostgreSQL -OutputDir Models -Force 
 
-
-
-
+Scaffold-DbContext "Host=ep-snowy-queen-a4qzeh8a-pooler.us-east-1.aws.neon.tech;Database=neondb;Username=neondb_owner;Password=npg_GVh64oCKHOzJ;SSL Mode=VerifyFull;Channel Binding=Require;" Npgsql.EntityFrameworkCore.PostgreSQL -OutputDir Models -Force

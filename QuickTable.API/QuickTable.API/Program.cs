@@ -47,6 +47,8 @@ app.UseSwaggerUI(c =>
     c.RoutePrefix = "swagger";
 });
 
+app.UseStaticFiles();
+
 app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
