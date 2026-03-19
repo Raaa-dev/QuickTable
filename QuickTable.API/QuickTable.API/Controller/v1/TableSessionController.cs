@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using QuickTable.Service.Models;
 using QuickTable.Service.Repositoies.Table;
 using QuickTable.Service.Repositoies.TableSession;
 
 namespace QuickTable.API.Controller.v1
 {
-    public class TableSessionController(ITableSession _tableSession) : BaseController    
+    public class TableSessionController(ITableSession _tableSession, QuickTableContext _context) : BaseController    
     {
         [HttpGet("Resolve")]
         public async Task<IActionResult> Resolve(string token)
@@ -59,6 +61,23 @@ namespace QuickTable.API.Controller.v1
         {
             await _tableSession.CloseSessionByTableAsync(tableId);
             return Ok(new { message = "Table sessions closed" });
+        }
+
+        // In your TableController
+        [HttpGet("with-session-status")]
+        public async Task<IActionResult> GetWithSessionStatus()
+        {
+            var tables = await _context.Tables
+                .Select(t => new {
+                    t.Id,
+                    t.TableNumber,
+                    HasActiveSession = _context.TableSessions
+                        .Any(s => s.TableId == t.Id && s.Status == "Active")
+                })
+                .OrderBy(t => t.TableNumber)
+                .ToListAsync();
+
+            return Ok(new { data = tables });
         }
     }
 }
