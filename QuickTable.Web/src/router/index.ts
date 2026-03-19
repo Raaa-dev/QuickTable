@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
+import type { RouteRecordRaw } from "vue-router";
 
-const routes = [
+const routes: RouteRecordRaw[] = [
   { path: "/", component: () => import("@/views/list-menu.vue") },
   { path: "/order", component: () => import("@/views/order.vue") },
   { path: "/history", component: () => import("@/views/history.vue") },
