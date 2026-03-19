@@ -224,6 +224,9 @@ onMounted(load);
   <DeleteConfirm
     :open="delModal.open"
     :label="delModal.label"
+    title="Delete Record"
+    text=" Are you sure you want to delete?"
+    textFooter=" This action cannot be undone."
     :saving="saving"
     @close="delModal.open = false"
     @confirm="doDelete"

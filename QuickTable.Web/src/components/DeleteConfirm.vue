@@ -3,6 +3,9 @@ defineProps({
   open: Boolean,
   label: String,
   saving: Boolean,
+  title: String,
+  text:String,
+  textFooter: String
 })
 defineEmits(['close', 'confirm'])
 </script>
@@ -12,11 +15,11 @@ defineEmits(['close', 'confirm'])
     <div class="overlay" :class="{ open }" @click.self="$emit('close')">
       <div class="confirm-modal" v-if="open">
         <div class="confirm-icon">🗑️</div>
-        <div class="confirm-title">Delete Record?</div>
+        <div class="confirm-title">{{ title }}</div>
         <div class="confirm-sub">
-          Are you sure you want to delete<br/>
+          {{ text }}<br/>
           <strong style="color:var(--text)">"{{ label }}"</strong>?<br/>
-          This action cannot be undone.
+          {{ textFooter}}
         </div>
         <div class="confirm-actions">
           <button class="btn btn-ghost" @click="$emit('close')">Cancel</button>

@@ -1,131 +1,117 @@
 <template>
-  <div>
-    <!-- Loading overlay -->
-    <div v-if="loading" class="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
-      <span class="loading loading-spinner text-warning" style="width:3rem;height:3rem;"></span>
-    </div>
+  <PageLayout
+    title="Reset Table Sessions"
+    breadcrumb="Reset Table Sessions"
+    @refresh="load"
+  >
+    <!-- Stats Row -->
+    <StatsRow
+      icon="🪑"
+      label="Tables"
+      :total="tables.length"
+      :active="activeTables.length"
+      :inactive="freeTables.length"
+      active-label="Active Sessions"
+      inactive-label="Free Tables"
+    />
 
-    <!-- Toast -->
-    <div v-if="toast.show" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-[440px]">
-      <div :class="toast.type === 'success' ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'"
-        class="border rounded-xl px-4 py-3 flex items-center gap-3 shadow-lg">
-        <span>{{ toast.type === 'success' ? '✅' : '❌' }}</span>
-        <span class="font-medium">{{ toast.message }}</span>
-      </div>
-    </div>
-
-    <!-- Page header -->
-    <div class="flex items-center justify-between mb-6">
-      <div>
-        <h1 class="text-xl font-bold text-gray-800">Reset Table Sessions</h1>
-        <p class="text-sm text-gray-500 mt-0.5">Close active sessions when customers leave</p>
-      </div>
-      <button class="btn btn-sm btn-outline" @click="load">🔄 Refresh</button>
-    </div>
-
-    <!-- Stats row -->
-    <div class="grid grid-cols-3 gap-3 mb-6">
-      <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 text-center">
-        <div class="text-2xl font-bold text-gray-800">{{ tables.length }}</div>
-        <div class="text-xs text-gray-500 mt-1">Total Tables</div>
-      </div>
-      <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 text-center">
-        <div class="text-2xl font-bold text-green-600">{{ activeTables.length }}</div>
-        <div class="text-xs text-gray-500 mt-1">Active Sessions</div>
-      </div>
-      <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 text-center">
-        <div class="text-2xl font-bold text-gray-400">{{ freeTables.length }}</div>
-        <div class="text-xs text-gray-500 mt-1">Free Tables</div>
-      </div>
-    </div>
-
-    <!-- Reset All button -->
-    <div v-if="activeTables.length > 0" class="mb-5">
-      <button
-        class="w-full bg-red-500 hover:bg-red-600 active:scale-95 transition-all text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2"
-        @click="confirmResetAll"
-      >
-        🗑️ Reset All Active Sessions ({{ activeTables.length }})
-      </button>
-    </div>
-
-    <!-- Table grid -->
-    <div class="grid grid-cols-2 gap-3">
-      <div
-        v-for="table in tables"
-        :key="table.id"
-        class="bg-white rounded-2xl p-4 shadow-sm border transition-all"
-        :class="table.hasActiveSession ? 'border-green-200' : 'border-gray-100'"
-      >
-        <!-- Top: badge + number -->
-        <div class="flex items-center justify-between mb-3">
-          <div
-            class="w-14 h-14 rounded-xl flex items-center justify-center font-bold text-xl"
-            :class="table.hasActiveSession ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400'"
-          >
-            {{ table.tableNumber }}
-          </div>
-          <span
-            class="text-xs font-semibold px-2.5 py-1 rounded-full"
-            :class="table.hasActiveSession
-              ? 'bg-green-100 text-green-700'
-              : 'bg-gray-100 text-gray-400'"
-          >
-            {{ table.hasActiveSession ? '● Active' : '○ Free' }}
-          </span>
-        </div>
-
-        <!-- Name -->
-        <div class="font-semibold text-gray-800 text-sm mb-3">Table {{ table.tableNumber }}</div>
-
-        <!-- Reset button or free label -->
+    <!-- DataTable wrapper -->
+    <DataTable
+      title="Table Sessions"
+      icon="🪑"
+      :count="tables.length"
+      :loading="loading"
+    >
+      <!-- Reset All button in toolbar slot -->
+      <template #toolbar>
         <button
-          v-if="table.hasActiveSession"
-          class="w-full bg-red-50 hover:bg-red-100 active:scale-95 transition-all text-red-600 font-semibold text-sm py-2 rounded-lg border border-red-200"
-          @click="confirmReset(table)"
+          v-if="activeTables.length > 0"
+          class="btn btn-danger btn-sm"
+          @click="confirmResetAll"
         >
-          🔄 Reset Session
+          🗑️ Reset All ({{ activeTables.length }})
         </button>
-        <div
-          v-else
-          class="w-full text-center text-xs text-gray-300 font-medium py-2 rounded-lg bg-gray-50"
-        >
-          No active session
-        </div>
-      </div>
+      </template>
 
-      <!-- Empty -->
-      <div v-if="tables.length === 0 && !loading" class="col-span-2 text-center py-16 text-gray-400">
-        <div class="text-5xl mb-3">🪑</div>
-        <p class="font-medium">No tables found</p>
-      </div>
-    </div>
+      <template #table>
+        <table>
+          <thead>
+            <tr>
+              <th>No.</th>
+              <th>Table</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(table, index) in tables" :key="table.id">
+              <td><span class="id-tag">#{{ index + 1 }}</span></td>
+              <td>
+                <div class="table-name-cell">
+                  <div
+                    class="table-avatar"
+                    :class="table.hasActiveSession ? 'active' : 'free'"
+                  >
+                    {{ table.tableNumber }}
+                  </div>
+                  <span class="name-text">Table {{ table.tableNumber }}</span>
+                </div>
+              </td>
+              <td>
+                <span class="chip" :class="table.hasActiveSession ? 'c-green' : 'c-gray'">
+                  {{ table.hasActiveSession ? '● Busy' : '○ Free' }}
+                </span>
+              </td>
+              <td>
+                <div class="row-actions">
+                  <button
+                    v-if="table.hasActiveSession"
+                    class="btn btn-danger btn-sm"
+                    @click="confirmReset(table)"
+                  >
+                    🔄 Reset
+                  </button>
+                  <span v-else class="no-action-text">—</span>
+                </div>
+              </td>
+            </tr>
 
-    <!-- Confirm Modal -->
-    <div v-if="confirmModal.open"
-      class="fixed inset-0 bg-black/50 flex items-center justify-center z-40 px-4"
-      @click.self="confirmModal.open = false">
-      <div class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
-        <div class="text-4xl text-center mb-3">⚠️</div>
-        <h3 class="text-center font-bold text-gray-800 text-lg mb-1">{{ confirmModal.title }}</h3>
-        <p class="text-center text-gray-500 text-sm mb-6">{{ confirmModal.message }}</p>
-        <div class="flex gap-3">
-          <button
-            class="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-600 font-semibold hover:bg-gray-50"
-            @click="confirmModal.open = false"
-          >Cancel</button>
-          <button
-            class="flex-1 py-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-white font-semibold"
-            @click="confirmModal.action"
-          >Reset</button>
-        </div>
-      </div>
-    </div>
-  </div>
+            <!-- Empty state -->
+            <tr v-if="tables.length === 0 && !loading">
+              <td colspan="4">
+                <div class="empty-state">
+                  <div class="text-4xl mb-2">🪑</div>
+                  <p>No tables found</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </template>
+    </DataTable>
+  </PageLayout>
+
+  <!-- Confirm Modal reusing DeleteConfirm style -->
+  <DeleteConfirm
+    :open="confirmModal.open"
+    :label="confirmModal.label"
+    :saving="loading"
+    title="Reset Table"
+    text=" Are you sure you want to reset this table?"
+    :message="confirmModal.message"
+    confirm-label="Reset"
+    @close="confirmModal.open = false"
+    @confirm="confirmModal.action"
+  />
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted, reactive } from "vue";
+import PageLayout from "@/components/PageLayout.vue";
+import StatsRow from "@/components/StatsRow.vue";
+import DataTable from "@/components/DataTable.vue";
+import DeleteConfirm from "@/components/DeleteConfirm.vue";
+import { useToast } from "@/composables/useToast";
 import api from "@/api/axios";
 
 interface TableItem {
@@ -134,12 +120,15 @@ interface TableItem {
   hasActiveSession: boolean;
 }
 
+const { toast } = useToast();
+
 const tables = ref<TableItem[]>([]);
 const loading = ref(false);
-const toast = reactive({ show: false, type: "success", message: "" });
+
 const confirmModal = reactive({
   open: false,
   title: "",
+  label: "",
   message: "",
   action: () => {},
 });
@@ -147,21 +136,13 @@ const confirmModal = reactive({
 const activeTables = computed(() => tables.value.filter(t => t.hasActiveSession));
 const freeTables = computed(() => tables.value.filter(t => !t.hasActiveSession));
 
-function showToast(type: "success" | "error", message: string) {
-  toast.type = type;
-  toast.message = message;
-  toast.show = true;
-  setTimeout(() => (toast.show = false), 3000);
-}
-
 async function load() {
   loading.value = true;
   try {
-    // ✅ use the new endpoint that includes hasActiveSession
-    const res = await api.get("/api/v1/Table/with-session-status");
+    const res = await api.get("/api/v1/TableSession/with-session-status");
     tables.value = res.data?.data || [];
   } catch (e: any) {
-    showToast("error", e.response?.data?.message || "Failed to load tables");
+    toast("❌ " + (e.response?.data?.message || "Failed to load tables"), "error");
   } finally {
     loading.value = false;
   }
@@ -169,6 +150,7 @@ async function load() {
 
 function confirmReset(table: TableItem) {
   confirmModal.title = `Reset Table ${table.tableNumber}?`;
+  confirmModal.label = `Table ${table.tableNumber}`;
   confirmModal.message = "This will close the active session. Customers will be logged out.";
   confirmModal.action = () => doReset(table.id);
   confirmModal.open = true;
@@ -176,6 +158,7 @@ function confirmReset(table: TableItem) {
 
 function confirmResetAll() {
   confirmModal.title = "Reset All Active Sessions?";
+  confirmModal.label = `${activeTables.value.length} active sessions`;
   confirmModal.message = `This will close ${activeTables.value.length} active sessions. All customers will be logged out.`;
   confirmModal.action = () => doResetAll();
   confirmModal.open = true;
@@ -186,10 +169,10 @@ async function doReset(tableId: number) {
   loading.value = true;
   try {
     await api.post(`/api/v1/TableSession/ResetTable/${tableId}`);
-    showToast("success", "Session closed successfully!");
+    toast("✅ Session closed successfully!", "success");
     await load();
   } catch (e: any) {
-    showToast("error", e.response?.data?.message || "Failed to reset session");
+    toast("❌ " + (e.response?.data?.message || "Failed to reset session"), "error");
   } finally {
     loading.value = false;
   }
@@ -204,10 +187,10 @@ async function doResetAll() {
         api.post(`/api/v1/TableSession/ResetTable/${t.id}`)
       )
     );
-    showToast("success", `${activeTables.value.length} sessions closed!`);
+    toast(`✅ ${activeTables.value.length} sessions closed!`, "success");
     await load();
   } catch (e: any) {
-    showToast("error", "Failed to reset some sessions");
+    toast("❌ Failed to reset some sessions", "error");
   } finally {
     loading.value = false;
   }
@@ -215,3 +198,42 @@ async function doResetAll() {
 
 onMounted(load);
 </script>
+
+<style scoped>
+table { width: 100%; border-collapse: collapse; }
+thead tr { background: var(--surface2); }
+th { padding: 11px 16px; text-align: left; font-size: 11px; font-family: var(--mono); color: var(--text3); letter-spacing: 1.5px; text-transform: uppercase; }
+td { padding: 13px 16px; font-size: 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tbody tr { transition: background 0.1s; }
+tbody tr:hover { background: var(--surface2); }
+
+.table-name-cell { display: flex; align-items: center; gap: 10px; }
+
+.table-avatar {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 16px;
+  flex-shrink: 0;
+}
+.table-avatar.active { background: #dcfce7; color: #16a34a; }
+.table-avatar.free   { background: var(--surface2); color: var(--text3); }
+
+.name-text { font-weight: 600; }
+
+.row-actions { display: flex; gap: 6px; }
+
+.no-action-text { color: var(--text3); font-size: 13px; }
+
+.empty-state {
+  text-align: center;
+  padding: 48px 0;
+  color: var(--text3);
+}
+
+/* Chip variants */
+.chip { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 999px; display: inline-block; }
+.c-green  { background: #dcfce7; color: #16a34a; }
+.c-gray   { background: var(--surface2); color: var(--text3); }
+</style>

@@ -5,7 +5,7 @@
   <section class="sticky top-0 z-10">
     <!-- Header -->
     <header class="bg-yellow-400 px-4 py-3 flex justify-between items-center font-bold">
-      <div class="text-xl text-gray-700">K3NEY</div>
+      <div class="text-xl text-gray-700">Hotpot</div>
         <div v-if="tableStore.tableNumber" class="text-sm text-gray-700 font-medium">
     🪑 {{ tableStore.tableNumber }}
   </div>
@@ -127,6 +127,7 @@ const showCart = ref(false);
 const cart = useCartStore();
 const tableStore = useTableStore();
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
+const loading = ref(false)
 
 const currentTab = ref("menu");
 const onTabChange = (tab) => {
@@ -171,6 +172,7 @@ const groupedMenuItems = computed(() => {
 
 // Methods
 const loadData = async () => {
+  loading.value = true;
   try {
     const catRes = await api.get('/api/v1/MenuCategory');
     categories.value = [
@@ -186,6 +188,8 @@ const loadData = async () => {
   } catch (err) {
     console.error("Failed to load menu", err);
     alert("Cannot load menu. Check API / network.");
+  }finally{
+    loading.value = false
   }
 };
 
