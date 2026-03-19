@@ -13,6 +13,8 @@ const routes = [
       { path: "menu-category", component: () => import("@/pages/categories/index.vue") },
       { path: "menu-item",     component: () => import("@/pages/menu-items/index.vue") },
       { path: "table",         component: () => import("@/pages/tables/index.vue") },
+      { path: "reset-table",         component: () => import("@/pages/reset-table/index.vue") },
+
     ]
   },
   // { path: "/admin/order", component: () => import("@/pages/order.vue") },

@@ -10,6 +10,8 @@ const navItems = [
   { path: "/admin/menu-category", label: "Categories", icon: "🗂️" },
   { path: "/admin/menu-item", label: "Menu Items", icon: "🍽️" },
   { path: "/admin/table", label: "Tables", icon: "🪑" },
+  { path: "/admin/reset-table", label: "Reset", icon: "🧹"  },
+
 ];
 </script>
 
