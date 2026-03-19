@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using QuickTable.API.Extensions;
 using QuickTable.Service.Models;
 using QuickTable.Service.Repositoies.User;
@@ -50,6 +51,18 @@ app.UseSwaggerUI(c =>
 app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
+
+var uploadsPath = Environment.GetEnvironmentVariable("UPLOAD_PATH")
+    ?? Path.Combine(builder.Environment.WebRootPath ??
+       builder.Environment.ContentRootPath, "uploads");
+
+Directory.CreateDirectory(uploadsPath);
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(uploadsPath),
+    RequestPath = "/uploads"
+});
 
 app.UseStaticFiles();
 

@@ -161,9 +161,15 @@ namespace QuickTable.Service.Repositoies.MenuItem
         }
 
         // ─── PRIVATE HELPERS ─────────────────────────────────────────────────
+        private string GetUploadBasePath()
+        {
+            return Environment.GetEnvironmentVariable("UPLOAD_PATH")
+                ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+        }
+
         private async Task<string> SaveImageFileAsync(IFormFile file)
         {
-            var uploadFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "menu-items");
+            var uploadFolder = Path.Combine(GetUploadBasePath(), "menu-items");
             Directory.CreateDirectory(uploadFolder);
 
             var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
@@ -178,7 +184,10 @@ namespace QuickTable.Service.Repositoies.MenuItem
         private void DeleteImageFile(string? imageUrl)
         {
             if (string.IsNullOrEmpty(imageUrl)) return;
-            var fullPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", imageUrl.TrimStart('/'));
+
+            var fileName = Path.GetFileName(imageUrl); // just the filename
+            var fullPath = Path.Combine(GetUploadBasePath(), "menu-items", fileName);
+
             if (File.Exists(fullPath)) File.Delete(fullPath);
         }
     }
