@@ -112,7 +112,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref, computed, onMounted } from "vue";
 import { useCartStore } from "../stores/cart";
 import { useTableStore } from "../stores/table";

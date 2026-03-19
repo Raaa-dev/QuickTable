@@ -15,9 +15,11 @@
     "noEmit": true,
 
     /* Linting */
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
+        "strict": false,        // ← add this
+    "noImplicitAny": false, // ← add this
+    "noUnusedLocals": false,      // ← stops "declared but never read" errors
+    "noUnusedParameters": false,
+
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true

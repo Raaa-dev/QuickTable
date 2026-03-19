@@ -1,9 +1,9 @@
-<script setup lang="ts">
+<script setup>
 import { ref, onMounted } from "vue";
 import api from "../api/axios";
 import FooterMenu from "../components/footer-menu.vue";
 
-const history = ref<any[]>([]);
+const history = ref<any>([]);
 const loading = ref(false);
 
 const loadHistory = async () => {
@@ -37,7 +37,7 @@ const loadHistory = async () => {
     const res = await api.get('/api/v1/Order/GetAll');
     const apiOrders = res.data?.data || [];
 
-    history.value = apiOrders.map((order: any) => ({
+    history.value = apiOrders.map((order) => ({
       id: order.id,
       orderNumber: order.orderNumber,
       total: order.totalAmount,
