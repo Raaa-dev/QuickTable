@@ -3,7 +3,7 @@ import { ref, onMounted } from "vue";
 import api from "../api/axios";
 import FooterMenu from "../components/footer-menu.vue";
 
-const history = ref<any>([]);
+const history = ref([]);
 const loading = ref(false);
 
 const loadHistory = async () => {
