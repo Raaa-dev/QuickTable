@@ -5,8 +5,6 @@ using QuickTable.Service.Repositoies.Auth.Dto;
 
 namespace QuickTable.API.Controller.v1
 {
-    [Route("api/[controller]")]
-    [ApiController]
     public class AuthController(IAuthRepository _authRepository, IConfiguration _config, IWebHostEnvironment _env) : BaseController
     {
         [HttpPost("login")]
