@@ -228,7 +228,7 @@ public partial class NeondbContext : DbContext
                 .HasColumnName("password");
             entity.Property(e => e.RefreshToken)
                 .HasColumnType("character varying")
-                .HasColumnName("refresh_token ");
+                .HasColumnName("refresh_token");
             entity.Property(e => e.UserName)
                 .HasMaxLength(100)
                 .HasColumnName("user_name");

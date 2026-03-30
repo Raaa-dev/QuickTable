@@ -221,11 +221,14 @@ public partial class QuickTableContext : DbContext
             entity.Property(e => e.Password)
                 .HasMaxLength(100)
                 .HasColumnName("password");
+            entity.Property(e => e.RefreshToken)
+                .HasColumnType("character varying")
+                .HasColumnName("refresh_token");
             entity.Property(e => e.UserName)
                 .HasMaxLength(100)
                 .HasColumnName("user_name");
-            entity.Property(e => e.RefreshToken)
-                .HasColumnName("refresh_token");
+            //entity.Property(e => e.RefreshToken)
+            //    .HasColumnName("refresh_token");
         });
 
         OnModelCreatingPartial(modelBuilder);

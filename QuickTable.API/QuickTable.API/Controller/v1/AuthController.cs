@@ -22,6 +22,7 @@ namespace QuickTable.API.Controller.v1
             {
                 message = "Login successful.",
                 userName = result.UserName,
+                accessToken = result.AccessToken
             });
         }
 

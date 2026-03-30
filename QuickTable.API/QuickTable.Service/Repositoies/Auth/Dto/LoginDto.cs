@@ -21,9 +21,8 @@ namespace QuickTable.Service.Repositoies.Auth.Dto
 
     public class AuthResponseDto
     {
-        //public string Token { get; set; } = null!;
-        //public string UserName { get; set; } = null!;
-        //public DateTime ExpiresAt { get; set; }
+        public string Token { get; set; } = null!;
+        public DateTime ExpiresAt { get; set; }
 
         // ✅ new fields only — remove Token and ExpiresAt
         public string AccessToken { get; set; } = null!;
