@@ -4,8 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using QuickTable.Service.Exceptions;
 using QuickTable.Service.Helpers;
 using QuickTable.Service.Models;
@@ -14,7 +17,7 @@ using QuickTable.Service.Repositoies.MenuItem.Dto;
 
 namespace QuickTable.Service.Repositoies.MenuItem
 {
-    public class MenuItemRepository (QuickTableContext _context, IMapper _mapper) : IMenuItemRepository
+    public class MenuItemRepository(QuickTableContext _context, IMapper _mapper, IConfiguration _config) : IMenuItemRepository
     {
         public async Task<PagedResponse<MenuItemReadDto>> GetAllAsync(string? search, MenuItemFilterDto filter)
         {
@@ -133,11 +136,12 @@ namespace QuickTable.Service.Repositoies.MenuItem
             if (!allowedTypes.Contains(file.ContentType.ToLower()))
                 throw new CustomException("Only JPEG, PNG, and WEBP images are allowed!");
 
-            // Delete old image if exists
-            DeleteImageFile(entity.ImageUrl);
+            // ✅ delete old image from Cloudinary
+            if (!string.IsNullOrEmpty(entity.ImageUrl))
+                await DeleteFromCloudinaryAsync(entity.ImageUrl);
 
-            // Save new image
-            entity.ImageUrl = await SaveImageFileAsync(file);
+            // ✅ upload new image to Cloudinary
+            entity.ImageUrl = await UploadToCloudinaryAsync(file);
 
             _context.MenuItems.Update(entity);
             await _context.SaveChangesAsync();
@@ -153,43 +157,63 @@ namespace QuickTable.Service.Repositoies.MenuItem
             if (string.IsNullOrEmpty(entity.ImageUrl))
                 throw new CustomException("This menu item has no image!");
 
-            DeleteImageFile(entity.ImageUrl);
+            await DeleteFromCloudinaryAsync(entity.ImageUrl);
             entity.ImageUrl = null;
 
             _context.MenuItems.Update(entity);
             await _context.SaveChangesAsync();
         }
 
-        // ─── PRIVATE HELPERS ─────────────────────────────────────────────────
-        private string GetUploadBasePath()
+        // ─── CLOUDINARY HELPERS ───────────────────────────────────────────────────
+        private Cloudinary GetCloudinary()
         {
-            return Environment.GetEnvironmentVariable("UPLOAD_PATH")
-                ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+            var account = new Account(
+                _config["Cloudinary:CloudName"],
+                _config["Cloudinary:ApiKey"],
+                _config["Cloudinary:ApiSecret"]
+            );
+            return new Cloudinary(account);
         }
 
-        private async Task<string> SaveImageFileAsync(IFormFile file)
+        private async Task<string> UploadToCloudinaryAsync(IFormFile file)
         {
-            var uploadFolder = Path.Combine(GetUploadBasePath(), "menu-items");
-            Directory.CreateDirectory(uploadFolder);
+            var cloudinary = GetCloudinary();
 
-            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
-            var filePath = Path.Combine(uploadFolder, fileName);
+            using var stream = file.OpenReadStream();
+            var uploadParams = new ImageUploadParams
+            {
+                File = new FileDescription(file.FileName, stream),
+                Folder = "menu-items"
+            };
 
-            using var stream = new FileStream(filePath, FileMode.Create);
-            await file.CopyToAsync(stream);
+            var result = await cloudinary.UploadAsync(uploadParams);
 
-            return $"/uploads/menu-items/{fileName}";
+            if (result.Error != null)
+                throw new CustomException($"Image upload failed: {result.Error.Message}");
+
+            return result.SecureUrl.ToString(); // ✅ permanent URL
         }
 
-        private void DeleteImageFile(string? imageUrl)
+        private async Task DeleteFromCloudinaryAsync(string imageUrl)
         {
-            if (string.IsNullOrEmpty(imageUrl)) return;
+            try
+            {
+                var cloudinary = GetCloudinary();
 
-            var fileName = Path.GetFileName(imageUrl); // just the filename
-            var fullPath = Path.Combine(GetUploadBasePath(), "menu-items", fileName);
+                // extract public_id from URL e.g. "menu-items/filename"
+                var uri = new Uri(imageUrl);
+                var segments = uri.AbsolutePath.Split('/');
+                var folderAndFile = string.Join("/", segments.TakeLast(2));
+                var publicId = Path.GetFileNameWithoutExtension(folderAndFile);
+                var fullPublicId = $"menu-items/{publicId}";
 
-            if (File.Exists(fullPath)) File.Delete(fullPath);
+                await cloudinary.DestroyAsync(new DeletionParams(fullPublicId));
+            }
+            catch
+            {
+                // don't throw if delete fails — just continue
+            }
         }
     }
-}
 
+}
