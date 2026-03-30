@@ -7,7 +7,7 @@ namespace QuickTable.API.Controller.v1
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthController(IAuthRepository _authRepository, IConfiguration _config) : BaseController
+    public class AuthController(IAuthRepository _authRepository, IConfiguration _config, IWebHostEnvironment _env) : BaseController
     {
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
@@ -89,11 +89,12 @@ namespace QuickTable.API.Controller.v1
 
         private void AppendCookie(string name, string value, DateTimeOffset expires)
         {
+            var isProduction = !_env.IsDevelopment();
             Response.Cookies.Append(name, value, new CookieOptions
             {
                 HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.Strict,
+                Secure = isProduction,
+                SameSite = isProduction ? SameSiteMode.None : SameSiteMode.Strict,
                 Path = "/",
                 Expires = expires
             });

@@ -136,37 +136,5 @@ namespace QuickTable.Service.Repositoies.Auth
                 expires
             );
         }
-
-        //private AuthResponseDto GenerateToken(Models.User user)
-        //{
-        //    var key = new SymmetricSecurityKey(
-        //        Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
-
-        //    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-        //    var expires = DateTime.UtcNow.AddMinutes(
-        //        double.Parse(_config["Jwt:ExpiresInMinutes"]!));
-
-        //    var claims = new[]
-        //    {
-        //    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-        //    new Claim(ClaimTypes.Name, user.UserName),
-        //};
-
-        //    var token = new JwtSecurityToken(
-        //        issuer: _config["Jwt:Issuer"],
-        //        audience: _config["Jwt:Audience"],
-        //        claims: claims,
-        //        expires: expires,
-        //        signingCredentials: creds
-        //    );
-
-        //    return new AuthResponseDto
-        //    {
-        //        Token = new JwtSecurityTokenHandler().WriteToken(token),
-        //        UserName = user.UserName,
-        //        ExpiresAt = expires
-        //    };
-        //}
     }
 }
