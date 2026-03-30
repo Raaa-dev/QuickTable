@@ -160,7 +160,7 @@ const placeOrder = async () => {
       >
         <img
           v-if="ci.menuItem.imageUrl"
-          :src="`${API_BASE}${ci.menuItem.imageUrl}`"
+          :src="`${ci.menuItem.imageUrl}`"
           :alt="ci.menuItem.name"
           class="w-14 h-14 rounded-lg object-cover flex-shrink-0"
         />

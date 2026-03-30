@@ -51,7 +51,7 @@
         <div class="relative overflow-hidden" style="height: 170px;">
           <img
             v-if="item.imageUrl"
-            :src="`${API_BASE}${item.imageUrl}`"
+            :src="`${item.imageUrl}`"
             :alt="item.name"
             class="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
           />
@@ -86,7 +86,7 @@
         <div class="relative overflow-hidden" style="height: 170px;">
           <img
             v-if="item.imageUrl"
-            :src="`${API_BASE}${item.imageUrl}`"
+            :src="`${item.imageUrl}`"
             :alt="item.name"
             class="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
           />

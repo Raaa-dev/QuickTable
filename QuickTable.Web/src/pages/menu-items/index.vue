@@ -102,7 +102,7 @@ function openEdit(row) {
   Object.assign(form, row);
   resetImageState();
   // Show existing image as preview
-  imagePreview.value = row.imageUrl ? `${API_BASE}${row.imageUrl}` : null;
+  imagePreview.value = row.imageUrl ? `${row.imageUrl}` : null;
   modal.isEdit = true;
   modal.open = true;
 }
@@ -246,7 +246,7 @@ onMounted(load);
                 <div class="thumb-wrap">
                   <img
                     v-if="row.imageUrl"
-                    :src="`${API_BASE}${row.imageUrl}`"
+                    :src="`${row.imageUrl}`"
                     class="thumb"
                     :alt="row.name"
                      @error="(e) => e.target.style.display='none'"
