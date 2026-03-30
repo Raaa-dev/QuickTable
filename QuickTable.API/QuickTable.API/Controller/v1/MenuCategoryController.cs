@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using QuickTable.Service.Repositoies.MenuCategory;
 using QuickTable.Service.Repositoies.MenuCategory.Dto;
@@ -19,6 +20,8 @@ namespace QuickTable.API.Controller.v1
             var result = await _menuCategoryRepository.GetByIdAsync(id);
             return Ok(result);
         }
+
+        [Authorize]
         [HttpPost("Create")]
         public async Task<IActionResult> CreateAsync([FromBody] MenuCategoryWriteDto dtoCreate)
         {
@@ -26,6 +29,7 @@ namespace QuickTable.API.Controller.v1
             return Ok(result);
         }
 
+        [Authorize]
         [HttpPut("Update/{id}")]
         public async Task<IActionResult> UpdateAsync(int id, [FromBody] MenuCategoryUpdateDto dtoUpdate)
         {

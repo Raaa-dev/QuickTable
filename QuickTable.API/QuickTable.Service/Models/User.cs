@@ -12,4 +12,6 @@ public partial class User
     public string Password { get; set; } = null!;
 
     public bool? IsActive { get; set; }
+
+    public string? RefreshToken { get; set; }
 }

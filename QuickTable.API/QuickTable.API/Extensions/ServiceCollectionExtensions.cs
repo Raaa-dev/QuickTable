@@ -8,6 +8,7 @@ using QuickTable.Service.Repositoies.MenuItem;
 using QuickTable.Service.Repositoies.Order;
 using QuickTable.Service.Repositoies.TableSession;
 using QuickTable.Service.Shared;
+using QuickTable.Service.Repositoies.Auth;
 
 namespace QuickTable.API.Extensions
 {
@@ -16,6 +17,7 @@ namespace QuickTable.API.Extensions
         public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration config)
         {
             services.AddHttpContextAccessor();
+            services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ITableRepository, TableRepository>();
             services.AddScoped<IMenuCategoryRepository, MenuCategoryRepository>();
@@ -31,6 +33,8 @@ namespace QuickTable.API.Extensions
                 options.ReportApiVersions = true;
                 options.ApiVersionReader = new UrlSegmentApiVersionReader();
             });
+
+
             return services;
         }
     }

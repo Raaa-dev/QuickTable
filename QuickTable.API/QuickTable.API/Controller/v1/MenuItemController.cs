@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using QuickTable.Service.Repositoies.MenuItem;
 using QuickTable.Service.Repositoies.MenuItem.Dto;
@@ -19,12 +20,16 @@ namespace QuickTable.API.Controller.v1
             var result = await _menuItemRepository.GetByIdAsync(id);
             return Ok(result);
         }
+
+        [Authorize]
         [HttpPost("Create")]
         public async Task<IActionResult> CreateAsync([FromBody] MenuItemWriteDto dtoCreate)
         {
             var result = await _menuItemRepository.CreateAsync(dtoCreate);
             return Ok(result);
         }
+
+        [Authorize]
         [HttpPut("Update/{id}")]
         public async Task<IActionResult> UpdateAsync(int id, [FromBody] MenuItemUpdateDto dtoUpdate)
         {
@@ -33,6 +38,7 @@ namespace QuickTable.API.Controller.v1
         }
 
         // PUT api/menu-items/5/image
+        [Authorize]
         [HttpPut("{id}/image")]
         public async Task<IActionResult> UploadImage(int id, IFormFile file)
         {
@@ -41,6 +47,7 @@ namespace QuickTable.API.Controller.v1
         }
 
         // DELETE api/menu-items/5/image
+        [Authorize]
         [HttpDelete("{id}/image")]
         public async Task<IActionResult> DeleteImage(int id)
         {
