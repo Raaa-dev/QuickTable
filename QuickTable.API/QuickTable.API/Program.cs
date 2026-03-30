@@ -107,6 +107,27 @@ app.UseSwaggerUI(c =>
     c.RoutePrefix = "swagger";
 });
 
+// add before app.Run()
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        var error = context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature>();
+        if (error != null)
+        {
+            context.Response.StatusCode = 500;
+            context.Response.ContentType = "application/json";
+            await context.Response.WriteAsync(
+                System.Text.Json.JsonSerializer.Serialize(new
+                {
+                    message = error.Error.Message,
+                    detail = error.Error.ToString()
+                })
+            );
+        }
+    });
+});
+
 app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
