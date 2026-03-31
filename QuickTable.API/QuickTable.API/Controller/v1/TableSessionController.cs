@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QuickTable.Service.Models;
@@ -49,6 +50,7 @@ namespace QuickTable.API.Controller.v1
 
         // POST /api/v1/Table/close/{sessionId}  ← for admin panel
         [HttpPost("ResetTableBySession/{sessionId}")]
+        [Authorize]
         public async Task<IActionResult> CloseSession(int sessionId)
         {
             await _tableSession.CloseSessionAsync(sessionId); // already exists ✅
@@ -56,6 +58,7 @@ namespace QuickTable.API.Controller.v1
         }
 
         // POST /api/v1/Table/close-by-table/{tableId}  ← close all active sessions for a table
+        [Authorize]
         [HttpPost("ResetTable/{tableId}")]
         public async Task<IActionResult> CloseSessionByTable(int tableId)
         {

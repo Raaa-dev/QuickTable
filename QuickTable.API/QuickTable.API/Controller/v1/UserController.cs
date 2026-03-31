@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using QuickTable.Service.Models;
 using QuickTable.Service.Repositoies.User;
@@ -9,6 +10,8 @@ namespace QuickTable.API.Controller.v1
     public class UserController (IUserRepository _userRepository) : BaseController
     {
         [HttpGet]
+        [Authorize]
+
         public async Task<IActionResult> GetAllAsync(string? search, [FromQuery] UserFilterDto filter)
         {
             var result = await _userRepository.GetAllAsync(search, filter);

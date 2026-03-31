@@ -21,7 +21,7 @@ namespace QuickTable.API.Controller.v1
             return Ok(result);
         }
 
-        //[Authorize]
+        [Authorize]
         [HttpPost("Create")]
         public async Task<IActionResult> CreateAsync([FromBody] MenuItemWriteDto dtoCreate)
         {
@@ -29,7 +29,7 @@ namespace QuickTable.API.Controller.v1
             return Ok(result);
         }
 
-        //[Authorize]
+        [Authorize]
         [HttpPut("Update/{id}")]
         public async Task<IActionResult> UpdateAsync(int id, [FromBody] MenuItemUpdateDto dtoUpdate)
         {
@@ -38,7 +38,7 @@ namespace QuickTable.API.Controller.v1
         }
 
         // PUT api/menu-items/5/image
-        //[Authorize]
+        [Authorize]
         [HttpPut("{id}/image")]
         public async Task<IActionResult> UploadImage(int id, IFormFile file)
         {
@@ -47,7 +47,7 @@ namespace QuickTable.API.Controller.v1
         }
 
         // DELETE api/menu-items/5/image
-        //[Authorize]
+        [Authorize]
         [HttpDelete("{id}/image")]
         public async Task<IActionResult> DeleteImage(int id)
         {
