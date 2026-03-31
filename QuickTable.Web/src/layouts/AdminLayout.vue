@@ -1,18 +1,28 @@
 <script setup>
-import { useRoute } from "vue-router";
+import { useRoute, useRouter  } from "vue-router";
 import { useToast } from "@/composables/useToast";
 import '@/assets/admin.css'
+import { useAuthStore } from "@/stores/auth";
+import api from "@/api/axios";
 
 const route = useRoute();
+const router = useRouter();
 const { toasts } = useToast();
+const auth = useAuthStore();
 
 const navItems = [
   { path: "/admin/menu-category", label: "Categories", icon: "🗂️" },
   { path: "/admin/menu-item", label: "Menu Items", icon: "🍽️" },
   { path: "/admin/table", label: "Tables", icon: "🪑" },
   { path: "/admin/reset-table", label: "Reset", icon: "🧹"  },
-
 ];
+
+const logout = async() =>{
+  await api.post(`/api/v1/auth/logout`)
+  auth.clearUser()
+  router.push('/login')
+}
+
 </script>
 
 <template>
@@ -38,12 +48,17 @@ const navItems = [
           <span>{{ item.label }}</span>
         </RouterLink>
       </nav>
-      <div class="sidebar-footer">
-        <div class="api-indicator">
-          <div class="api-dot"></div>
-          <span>API Connected</span>
+        <div class="sidebar-footer">
+          <div class="user-info">
+            <div class="user-avatar">👤</div>
+            <span class="user-name">{{ auth?.userName }}</span>
+          </div>
+          <button class="logout-btn" @click="logout">🚪 Logout</button>
+          <!-- <div class="api-indicator">
+            <div class="api-dot"></div>
+            <span>API Connected</span>
+          </div> -->
         </div>
-      </div>
     </aside>
 
     <div class="main">
@@ -245,4 +260,30 @@ const navItems = [
   border-color: #a78bfa40;
   color: var(--purple);
 }
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+.user-avatar { font-size: 18px; }
+.user-name { font-size: 13px; font-weight: 600; color: var(--text); }
+
+.logout-btn {
+  width: 100%;
+  padding: 10px 12px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--red);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  margin-bottom: 8px;
+  transition: all 0.15s;
+}
+.logout-btn:hover { background: rgba(239,68,68,0.1); border-color: var(--red); }
 </style>
