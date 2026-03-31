@@ -1,32 +1,17 @@
 const BASE = 'https://quicktable-production.up.railway.app/api/v1'
 
-export async function fetchAll(endpoint) {
-  const res = await fetch(`${BASE}${endpoint}?pageSize=300`)
-  const json = await res.json()
-  return json.data || []
-}
-
-export async function createRecord(endpoint, payload) {
+const request = async (endpoint, options = {}) => {
   const res = await fetch(`${BASE}${endpoint}`, {
-    method: 'POST',
+    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
+    ...options,
+    body: options.body ? JSON.stringify(options.body) : undefined,
   })
   if (!res.ok) throw new Error('Server error ' + res.status)
-  return res.json()
+  return res.status === 204 ? null : res.json()
 }
 
-export async function updateRecord(endpoint, id, payload) {
-  const res = await fetch(`${BASE}${endpoint}/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  })
-  if (!res.ok) throw new Error('Server error ' + res.status)
-  return res.json()
-}
-
-export async function deleteRecord(endpoint, id) {
-  const res = await fetch(`${BASE}${endpoint}/${id}`, { method: 'DELETE' })
-  if (!res.ok) throw new Error('Server error ' + res.status)
-}
+export const fetchAll     = async (endpoint)              => { const json = await request(`${endpoint}?pageSize=300`); return json?.data || [] }
+export const createRecord = (endpoint, payload)           => request(endpoint, { method: 'POST', body: payload })
+export const updateRecord = (endpoint, id, payload)       => request(`${endpoint}/${id}`, { method: 'PUT', body: payload })
+export const deleteRecord = (endpoint, id)                => request(`${endpoint}/${id}`, { method: 'DELETE' })

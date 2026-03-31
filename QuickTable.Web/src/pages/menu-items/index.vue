@@ -166,6 +166,7 @@ async function uploadImage(id, file) {
   formData.append("file", file);
   const res = await fetch(`${API_BASE}/api/v1/MenuItem/${id}/image`, {
     method: "PUT",
+    credentials: 'include', 
     body: formData,
   });
   if (!res.ok) throw new Error("Image upload failed!");
