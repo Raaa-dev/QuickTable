@@ -3,6 +3,7 @@ import { useRoute, useRouter  } from "vue-router";
 import { useToast } from "@/composables/useToast";
 import '@/assets/admin.css'
 import { useAuthStore } from "@/stores/auth";
+import { authLogout } from "@/composables/useApi" 
 import api from "@/api/axios";
 
 const route = useRoute();
@@ -17,8 +18,8 @@ const navItems = [
   { path: "/admin/reset-table", label: "Reset", icon: "🧹"  },
 ];
 
-const logout = async() =>{
-  await api.post(`/api/v1/auth/logout`)
+const logout = async () => {
+  await authLogout()
   auth.clearUser()
   router.push('/login')
 }
