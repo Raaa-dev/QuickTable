@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Net;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using QuickTable.Service.Repositoies.Auth;
 using QuickTable.Service.Repositoies.Auth.Dto;
@@ -46,15 +47,15 @@ namespace QuickTable.API.Controller.v1
         [HttpPost("refresh")]
         public async Task<IActionResult> Refresh()
         {
-            var refreshToken = Request.Cookies["refreshToken"];
+            var refreshToken = Request.Cookies["refreshToken"]; // ← reads refreshToken cookie
             if (string.IsNullOrEmpty(refreshToken))
                 return Unauthorized(new { message = "No refresh token found." });
 
-            var result = await _authRepository.RefreshAsync(refreshToken);
+            var result = await _authRepository.RefreshAsync(refreshToken); // ← validates it
             if (result is null)
                 return Unauthorized(new { message = "Invalid or expired refresh token." });
 
-            SetTokenCookies(result);
+            SetTokenCookies(result); //← sets NEW accessToken + refreshToken cookies
 
             return Ok(new
             {
@@ -79,10 +80,10 @@ namespace QuickTable.API.Controller.v1
         private void SetTokenCookies(AuthResponseDto result)
         {
             AppendCookie("accessToken", result.AccessToken,
-                DateTimeOffset.UtcNow.AddMinutes(double.Parse(_config["Jwt:AccessTokenExpiresInMinutes"]!)));
+                DateTimeOffset.UtcNow.AddMinutes(double.Parse(_config["Jwt:AccessTokenExpiresInMinutes"]!))); // ← new accessToken
 
             AppendCookie("refreshToken", result.RefreshToken,
-                DateTimeOffset.UtcNow.AddDays(double.Parse(_config["Jwt:RefreshTokenExpiresDays"]!)));
+                DateTimeOffset.UtcNow.AddDays(double.Parse(_config["Jwt:RefreshTokenExpiresDays"]!))); // ← new refreshToken
         }
 
         private void AppendCookie(string name, string value, DateTimeOffset expires)
