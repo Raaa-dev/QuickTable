@@ -11,6 +11,7 @@ const refreshToken = async () => {
   }
 }
 
+//request(retry=true)  → 401 → refreshToken() → request(retry=false) → 401 → throw error ✅ stops
 const request = async (endpoint, options = {}, retry = true) => {
   const res = await fetch(`${BASE}${endpoint}`, {
     credentials: 'include',
