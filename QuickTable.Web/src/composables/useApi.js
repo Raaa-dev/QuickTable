@@ -3,7 +3,7 @@ const BASE = 'https://quicktable-production.up.railway.app/api/v1'
 const refreshToken = async () => {
   const res = await fetch(`${BASE}/auth/refresh`, {
     method: 'POST',
-    credentials: 'include',
+    credentials: 'include', //← sends refreshToken cookie to backend
   })
   if (!res.ok) {
     window.location.href = '/login'
