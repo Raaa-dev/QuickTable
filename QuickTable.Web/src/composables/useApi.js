@@ -1,4 +1,5 @@
-const BASE = 'https://quicktable-production.up.railway.app/api/v1'
+const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
+const BASE = `${API_BASE}/api/v1`;
 
 const refreshToken = async () => {
   const res = await fetch(`${BASE}/auth/refresh`, {
