@@ -6,9 +6,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  # 1. Build & Deploy Backend API
-  build-and-deploy-api:
-    name: Build & Deploy Backend (.NET)
+  # 1. Build & Push Backend Docker Image (Runs on GitHub Free Cloud)
+  build-backend:
+    name: Build Backend Image (.NET)
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -36,22 +36,9 @@ jobs:
           push: true
           tags: ghcr.io/raaa-dev/quicktable-api:latest
 
-      - name: Deploy Backend to VM via SSH
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.VM_HOST }}
-          username: ${{ secrets.VM_USER }}
-          key: ${{ secrets.VM_SSH_KEY }}
-          script: |
-            cd ~/quicktable
-            echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-            docker compose pull backend
-            docker compose up -d backend
-            docker image prune -f
-
-  # 2. Build & Deploy Frontend Web
-  build-and-deploy-web:
-    name: Build & Deploy Frontend (Vue/Nginx)
+  # 2. Build & Push Frontend Docker Image (Runs on GitHub Free Cloud)
+  build-frontend:
+    name: Build Frontend Image (Vue/Nginx)
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -79,15 +66,17 @@ jobs:
           push: true
           tags: ghcr.io/raaa-dev/quicktable-web:latest
 
-      - name: Deploy Frontend to VM via SSH
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.VM_HOST }}
-          username: ${{ secrets.VM_USER }}
-          key: ${{ secrets.VM_SSH_KEY }}
-          script: |
-            cd ~/quicktable
-            echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-            docker compose pull frontend
-            docker compose up -d frontend
-            docker image prune -f
+  # 3. Deploy directly on VM using the Self-Hosted Runner (Zero SSH needed!)
+  deploy-to-vm:
+    name: Deploy to VM Server
+    needs: [build-backend, build-frontend]
+    runs-on: self-hosted
+
+    steps:
+      - name: Pull Latest Images & Restart Containers
+        run: |
+          cd ~/quicktable
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          docker compose pull
+          docker compose up -d
+          docker image prune -f
