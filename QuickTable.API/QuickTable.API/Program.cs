@@ -29,7 +29,8 @@ builder.Services.AddCors(options =>
                 "http://localhost:5174",
                  "http://localhost:5175",
                 "https://quicktable.store",
-                "https://www.quicktable.store"
+                "https://www.quicktable.store",
+                "http://172.17.6.135"
             )
             .AllowAnyMethod()
             .AllowAnyHeader()

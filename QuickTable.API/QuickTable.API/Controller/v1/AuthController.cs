@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using QuickTable.Service.Repositoies.Auth;
@@ -88,12 +88,12 @@ namespace QuickTable.API.Controller.v1
 
         private void AppendCookie(string name, string value, DateTimeOffset expires)
         {
-            var isProduction = !_env.IsDevelopment();
+            var isHttps = HttpContext.Request.IsHttps;
             Response.Cookies.Append(name, value, new CookieOptions
             {
                 HttpOnly = true,
-                Secure = isProduction,
-                SameSite = isProduction ? SameSiteMode.None : SameSiteMode.Strict,
+                Secure = isHttps,
+                SameSite = isHttps ? SameSiteMode.None : SameSiteMode.Lax,
                 Path = "/",
                 Expires = expires
             });
