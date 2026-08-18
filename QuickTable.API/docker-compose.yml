@@ -20,6 +20,8 @@ services:
     image: ghcr.io/raaa-dev/quicktable-api:latest
     container_name: quicktable_api
     restart: always
+    ports:
+      - "8080:8080"
     depends_on:
       - postgres_db
     environment:
