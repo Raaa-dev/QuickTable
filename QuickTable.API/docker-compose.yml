@@ -27,6 +27,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ConnectionStrings__DefaultConnection=Host=postgres_db;Port=5432;Database=${POSTGRES_DB:-quicktable};Username=${POSTGRES_USER:-quicktable_user};Password=${POSTGRES_PASSWORD:-YourStrongPassword123!}
+      - AppSettings__FrontendUrl=${FRONTEND_URL:-http://172.17.6.135}
       - Jwt__Key=${JWT_KEY:-your-super-secret-key-at-least-32-chars!!}
       - Jwt__Issuer=QuickTableAPI
       - Jwt__Audience=QuickTableClient
