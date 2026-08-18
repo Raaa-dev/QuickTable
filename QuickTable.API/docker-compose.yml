@@ -6,6 +6,8 @@ services:
     image: postgres:16-alpine
     container_name: quicktable_db
     restart: always
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-quicktable}
       POSTGRES_USER: ${POSTGRES_USER:-quicktable_user}
