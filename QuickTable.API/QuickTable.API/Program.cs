@@ -8,6 +8,8 @@ using QuickTable.API.Extensions;
 using QuickTable.Service.Models;
 using QuickTable.Service.Repositoies.User;
 using Microsoft.OpenApi.Models;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -153,5 +155,28 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// Automatically create database tables if they do not exist
+try
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<QuickTableContext>();
+    var dbCreator = db.Database.GetService<IDatabaseCreator>() as RelationalDatabaseCreator;
+    if (dbCreator != null)
+    {
+        if (!dbCreator.Exists())
+        {
+            dbCreator.Create();
+        }
+        if (!dbCreator.HasTables())
+        {
+            dbCreator.CreateTables();
+        }
+    }
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"Database initialization note: {ex.Message}");
+}
 
 app.Run();

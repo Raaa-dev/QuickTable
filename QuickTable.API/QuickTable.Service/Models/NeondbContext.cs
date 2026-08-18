@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
@@ -41,9 +41,9 @@ public partial class NeondbContext : DbContext
     {
         modelBuilder.Entity<MenuCategory>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName(" menu_categories_pkey");
+            entity.HasKey(e => e.Id).HasName("menu_categories_pkey");
 
-            entity.ToTable(" menu_categories");
+            entity.ToTable("menu_categories");
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.IsActive)
